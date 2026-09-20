@@ -1,0 +1,29 @@
+---
+- name: Create Bambuddy directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ bambuddy_dir }}"
+    - "{{ bambuddy_dir }}/data"
+    - "{{ bambuddy_dir }}/logs"
+
+- name: Render Bambuddy Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ bambuddy_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Render Bambuddy env file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ bambuddy_dir }}/.env"
+    mode: "0640"
+
+- name: Start Bambuddy
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ bambuddy_dir }}"
+  register: out
+  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"

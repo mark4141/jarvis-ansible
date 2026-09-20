@@ -1,0 +1,23 @@
+---
+- name: Create Pi-hole data directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ pihole_data_dir }}"
+    - "{{ pihole_data_dir }}/etc-pihole"
+    - "{{ pihole_data_dir }}/etc-dnsmasq.d"
+
+- name: Render Pi-hole Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ pihole_data_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Start Pi-hole
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ pihole_data_dir }}"
+  register: out
+  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"

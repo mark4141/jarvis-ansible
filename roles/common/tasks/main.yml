@@ -1,0 +1,21 @@
+---
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ timezone }}"
+  ignore_errors: true
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: "{{ homelab_packages }}"
+    state: present
+
+- name: Create homelab data root
+  ansible.builtin.file:
+    path: /opt/homelab
+    state: directory
+    mode: "0755"

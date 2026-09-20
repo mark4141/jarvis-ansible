@@ -1,0 +1,18 @@
+services:
+  pihole:
+    image: {{ pihole_image }}
+    container_name: {{ pihole_container_name }}
+    hostname: pihole
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TZ: "{{ pihole_timezone }}"
+      FTLCONF_webserver_api_password: "{{ pihole_web_password }}"
+      FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
+      FTLCONF_dns_upstreams: "{{ pihole_upstream_dns | join(';') }}"
+    volumes:
+      - "{{ pihole_data_dir }}/etc-pihole:/etc/pihole"
+      - "{{ pihole_data_dir }}/etc-dnsmasq.d:/etc/dnsmasq.d"
+    cap_add:
+      - NET_ADMIN
+      - SYS_TIME
