@@ -1,0 +1,24 @@
+---
+- name: Create Plex directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ plex_dir }}"
+    - "{{ plex_dir }}/config"
+    - "{{ plex_dir }}/transcode"
+    - "{{ plex_media_dir }}"
+
+- name: Render Plex Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ plex_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Start Plex
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ plex_dir }}"
+  register: out
+  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"

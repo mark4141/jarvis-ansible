@@ -15,7 +15,7 @@ homelab_packages:
   - python3-pip
 
 ufw_enabled: false
-ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080]
+ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080, 32400]
 ufw_allowed_udp: [53]
 
 docker_users:
@@ -56,3 +56,13 @@ nextcloud_overwrite_protocol: http
 nextcloud_trusted_domains:
   - localhost
   - 192.168.2.43
+
+plex_image: lscr.io/linuxserver/plex:latest
+plex_container_name: plex
+plex_dir: /opt/homelab/plex
+plex_media_dir: /opt/homelab/plex/media
+plex_timezone: "{{ timezone }}"
+plex_puid: "1000"
+plex_pgid: "1000"
+plex_claim: ""
+plex_devices: []

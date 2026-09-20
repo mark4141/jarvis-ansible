@@ -1,0 +1,17 @@
+services:
+  plex:
+    image: {{ plex_image }}
+    container_name: {{ plex_container_name }}
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TZ: "{{ plex_timezone }}"
+      PUID: "{{ plex_puid }}"
+      PGID: "{{ plex_pgid }}"
+      VERSION: docker
+      PLEX_CLAIM: "{{ plex_claim }}"
+      ADVERTISE_IP: "http://192.168.2.43:32400/"
+    volumes:
+      - {{ plex_dir }}/config:/config
+      - {{ plex_dir }}/transcode:/transcode
+      - {{ plex_media_dir }}:/media

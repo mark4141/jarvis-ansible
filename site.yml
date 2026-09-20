@@ -14,8 +14,11 @@
       tags: [pihole]
     - role: nextcloud
       tags: [nextcloud]
+    - role: plex
+      tags: [plex]
   post_tasks:
     - name: Show URLs
       ansible.builtin.debug:
         msg:
           - "Bambuddy:  http://192.168.2.43:{{ bambuddy_port }}"
+          - "Plex:      http://192.168.2.43:32400/web"
