@@ -15,7 +15,7 @@ homelab_packages:
   - python3-pip
 
 ufw_enabled: false
-ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080, 32400]
+ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080, 32400, 8096]
 ufw_allowed_udp: [53]
 
 docker_users:
@@ -66,3 +66,11 @@ plex_puid: "1000"
 plex_pgid: "1000"
 plex_claim: ""
 plex_devices: []
+
+jellyfin_image: lscr.io/linuxserver/jellyfin:latest
+jellyfin_container_name: jellyfin
+jellyfin_dir: /opt/homelab/jellyfin
+jellyfin_media_dir: /opt/homelab/jellyfin/media
+jellyfin_timezone: "{{ timezone }}"
+jellyfin_puid: "1000"
+jellyfin_pgid: "1000"
