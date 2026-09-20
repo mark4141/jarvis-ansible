@@ -1,0 +1,24 @@
+---
+- name: Create Jellyfin directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ jellyfin_dir }}"
+    - "{{ jellyfin_dir }}/config"
+    - "{{ jellyfin_dir }}/cache"
+    - "{{ jellyfin_media_dir }}"
+
+- name: Render Jellyfin Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ jellyfin_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Start Jellyfin
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ jellyfin_dir }}"
+  register: out
+  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"

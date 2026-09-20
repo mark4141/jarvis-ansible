@@ -1,0 +1,14 @@
+services:
+  jellyfin:
+    image: {{ jellyfin_image }}
+    container_name: {{ jellyfin_container_name }}
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TZ: "{{ jellyfin_timezone }}"
+      PUID: "{{ jellyfin_puid }}"
+      PGID: "{{ jellyfin_pgid }}"
+    volumes:
+      - {{ jellyfin_dir }}/config:/config
+      - {{ jellyfin_dir }}/cache:/cache
+      - {{ jellyfin_media_dir }}:/media
