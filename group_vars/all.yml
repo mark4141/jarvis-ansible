@@ -1,0 +1,58 @@
+---
+timezone: America/Moncton
+homelab_packages:
+  - curl
+  - wget
+  - git
+  - ca-certificates
+  - gnupg
+  - lsb-release
+  - ufw
+  - htop
+  - vim
+  - net-tools
+  - dnsutils
+  - python3-pip
+
+ufw_enabled: false
+ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080]
+ufw_allowed_udp: [53]
+
+docker_users:
+  - "{{ ansible_user | default('thor69') }}"
+
+pihole_image: pihole/pihole:latest
+pihole_container_name: pihole
+pihole_web_port: "80"
+pihole_https_port: "443"
+pihole_timezone: "{{ timezone }}"
+pihole_web_password: "changeme-pihole"
+pihole_upstream_dns: [1.1.1.1, 1.0.0.1]
+pihole_dns_listening_mode: ALL
+pihole_data_dir: /opt/homelab/pihole
+
+bambuddy_image: ghcr.io/maziggy/bambuddy:latest
+bambuddy_container_name: bambuddy
+bambuddy_dir: /opt/homelab/bambuddy
+bambuddy_port: "8000"
+bambuddy_timezone: "{{ timezone }}"
+bambuddy_puid: "1000"
+bambuddy_pgid: "1000"
+bambuddy_network_mode: host
+
+nextcloud_image: nextcloud:apache
+nextcloud_postgres_image: postgres:16-alpine
+nextcloud_redis_image: redis:7-alpine
+nextcloud_container_name: nextcloud
+nextcloud_dir: /opt/homelab/nextcloud
+nextcloud_http_port: "8080"
+nextcloud_timezone: "{{ timezone }}"
+nextcloud_admin_user: admin
+nextcloud_admin_password: "changeme-nextcloud"
+nextcloud_db_name: nextcloud
+nextcloud_db_user: nextcloud
+nextcloud_db_password: "changeme-nextcloud-db"
+nextcloud_overwrite_protocol: http
+nextcloud_trusted_domains:
+  - localhost
+  - 192.168.2.43

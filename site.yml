@@ -1,0 +1,21 @@
+---
+- name: Ubuntu Server home lab
+  hosts: homelab
+  become: true
+  gather_facts: true
+  roles:
+    - role: common
+      tags: [always]
+    - role: docker
+      tags: [always]
+    - role: bambuddy
+      tags: [bambuddy]
+    - role: pihole
+      tags: [pihole]
+    - role: nextcloud
+      tags: [nextcloud]
+  post_tasks:
+    - name: Show URLs
+      ansible.builtin.debug:
+        msg:
+          - "Bambuddy:  http://192.168.2.43:{{ bambuddy_port }}"
