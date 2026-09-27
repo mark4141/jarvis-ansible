@@ -7,18 +7,14 @@
   loop:
     - "{{ homeassistant_dir }}"
     - "{{ homeassistant_dir }}/config"
+    - "{{ homeassistant_dir }}/config/custom_components"
+    - "{{ homeassistant_dir }}/config/packages"
 
 - name: Render Home Assistant Compose file
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: "{{ homeassistant_dir }}/docker-compose.yml"
     mode: "0644"
-
-- name: Create Home Assistant packages directory
-  ansible.builtin.file:
-    path: "{{ homeassistant_dir }}/config/packages"
-    state: directory
-    mode: "0755"
 
 - name: Install jarvis hub package
   ansible.builtin.template:
@@ -35,6 +31,25 @@
       homeassistant:
         packages: !include_dir_named packages
     force: false
+    mode: "0644"
+
+- name: Install Grok conversation custom component
+  ansible.builtin.git:
+    repo: https://github.com/braytonstafford/grok_conversation.git
+    dest: /tmp/grok_conversation
+    version: master
+    force: true
+
+- name: Copy Grok conversation into HA config
+  ansible.builtin.copy:
+    src: /tmp/grok_conversation/custom_components/grok_conversation
+    dest: "{{ homeassistant_dir }}/config/custom_components/grok_conversation"
+    remote_src: true
+
+- name: Install Jarvis system prompt
+  ansible.builtin.copy:
+    src: jarvis_prompt.txt
+    dest: "{{ homeassistant_dir }}/config/jarvis_prompt.txt"
     mode: "0644"
 
 - name: Start Home Assistant
