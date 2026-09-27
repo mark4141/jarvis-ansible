@@ -1,0 +1,65 @@
+# Jarvis hub. Printer control stays in Bambuddy.
+
+panel_iframe:
+  bambuddy:
+    title: Bambuddy
+    icon: mdi:printer-3d
+    url: http://192.168.2.43:8000
+  jellyfin:
+    title: Jellyfin
+    icon: mdi:filmstrip
+    url: http://192.168.2.43:8096
+  nextcloud:
+    title: Nextcloud
+    icon: mdi:cloud
+    url: http://192.168.2.43:8080
+  pihole:
+    title: Pi-hole
+    icon: mdi:shield-check
+    url: http://192.168.2.43/admin
+  plex:
+    title: Plex
+    icon: mdi:plex
+    url: http://192.168.2.43:32400/web
+
+command_line:
+  - binary_sensor:
+      name: Bambuddy
+      unique_id: jarvis_bambuddy
+      command: 'curl -sf -o /dev/null --max-time 3 http://127.0.0.1:8000 && echo ON || echo OFF'
+      payload_on: "ON"
+      payload_off: "OFF"
+      scan_interval: 60
+      device_class: connectivity
+  - binary_sensor:
+      name: Jellyfin
+      unique_id: jarvis_jellyfin
+      command: 'curl -sf -o /dev/null --max-time 3 http://127.0.0.1:8096 && echo ON || echo OFF'
+      payload_on: "ON"
+      payload_off: "OFF"
+      scan_interval: 60
+      device_class: connectivity
+  - binary_sensor:
+      name: Nextcloud
+      unique_id: jarvis_nextcloud
+      command: 'curl -sf -o /dev/null --max-time 3 http://127.0.0.1:8080 && echo ON || echo OFF'
+      payload_on: "ON"
+      payload_off: "OFF"
+      scan_interval: 60
+      device_class: connectivity
+  - binary_sensor:
+      name: Pi-hole
+      unique_id: jarvis_pihole
+      command: 'curl -sf -o /dev/null --max-time 3 http://127.0.0.1/admin && echo ON || echo OFF'
+      payload_on: "ON"
+      payload_off: "OFF"
+      scan_interval: 60
+      device_class: connectivity
+  - binary_sensor:
+      name: Plex
+      unique_id: jarvis_plex
+      command: 'curl -sf -o /dev/null --max-time 3 http://127.0.0.1:32400/web && echo ON || echo OFF'
+      payload_on: "ON"
+      payload_off: "OFF"
+      scan_interval: 60
+      device_class: connectivity

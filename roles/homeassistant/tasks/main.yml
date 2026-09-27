@@ -14,6 +14,29 @@
     dest: "{{ homeassistant_dir }}/docker-compose.yml"
     mode: "0644"
 
+- name: Create Home Assistant packages directory
+  ansible.builtin.file:
+    path: "{{ homeassistant_dir }}/config/packages"
+    state: directory
+    mode: "0755"
+
+- name: Install jarvis hub package
+  ansible.builtin.template:
+    src: packages/jarvis.yaml.j2
+    dest: "{{ homeassistant_dir }}/config/packages/jarvis.yaml"
+    mode: "0644"
+
+- name: Ensure configuration.yaml exists
+  ansible.builtin.copy:
+    dest: "{{ homeassistant_dir }}/config/configuration.yaml"
+    content: |
+      default_config:
+
+      homeassistant:
+        packages: !include_dir_named packages
+    force: false
+    mode: "0644"
+
 - name: Start Home Assistant
   ansible.builtin.command:
     cmd: docker compose up -d
