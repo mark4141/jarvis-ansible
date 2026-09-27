@@ -1,0 +1,22 @@
+---
+- name: Create Home Assistant directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ homeassistant_dir }}"
+    - "{{ homeassistant_dir }}/config"
+
+- name: Render Home Assistant Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ homeassistant_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Start Home Assistant
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ homeassistant_dir }}"
+  register: out
+  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"

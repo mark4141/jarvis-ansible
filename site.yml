@@ -18,10 +18,13 @@
       tags: [plex]
     - role: jellyfin
       tags: [jellyfin]
+    - role: homeassistant
+      tags: [homeassistant]
   post_tasks:
     - name: Show URLs
       ansible.builtin.debug:
         msg:
-          - "Bambuddy:  http://192.168.2.43:{{ bambuddy_port }}"
-          - "Plex:      http://192.168.2.43:32400/web"
-          - "Jellyfin:  http://192.168.2.43:8096"
+          - "Bambuddy:       http://192.168.2.43:8000"
+          - "Jellyfin:       http://192.168.2.43:8096"
+          - "Home Assistant: http://192.168.2.43:8123"
+          - "Plex:           http://192.168.2.43:32400/web"
