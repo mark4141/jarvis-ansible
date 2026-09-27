@@ -1,4 +1,4 @@
-# Jarvis hub. Printer control stays in Bambuddy.
+# Jarvis hub. Printer control stays in Bambuddy. No Plex.
 
 panel_iframe:
   bambuddy:
@@ -17,10 +17,6 @@ panel_iframe:
     title: Pi-hole
     icon: mdi:shield-check
     url: http://192.168.2.43/admin
-  plex:
-    title: Plex
-    icon: mdi:plex
-    url: http://192.168.2.43:32400/web
 
 command_line:
   - binary_sensor:
@@ -51,14 +47,6 @@ command_line:
       name: Pi-hole
       unique_id: jarvis_pihole
       command: 'curl -sf -o /dev/null --max-time 3 http://127.0.0.1/admin && echo ON || echo OFF'
-      payload_on: "ON"
-      payload_off: "OFF"
-      scan_interval: 60
-      device_class: connectivity
-  - binary_sensor:
-      name: Plex
-      unique_id: jarvis_plex
-      command: 'curl -sf -o /dev/null --max-time 3 http://127.0.0.1:32400/web && echo ON || echo OFF'
       payload_on: "ON"
       payload_off: "OFF"
       scan_interval: 60

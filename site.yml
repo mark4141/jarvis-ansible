@@ -14,8 +14,6 @@
       tags: [pihole]
     - role: nextcloud
       tags: [nextcloud]
-    - role: plex
-      tags: [plex]
     - role: jellyfin
       tags: [jellyfin]
     - role: homeassistant
@@ -24,7 +22,8 @@
     - name: Show URLs
       ansible.builtin.debug:
         msg:
+          - "Home Assistant: http://192.168.2.43:8123"
           - "Bambuddy:       http://192.168.2.43:8000"
           - "Jellyfin:       http://192.168.2.43:8096"
-          - "Home Assistant: http://192.168.2.43:8123"
-          - "Plex:           http://192.168.2.43:32400/web"
+          - "Nextcloud:      http://192.168.2.43:8080"
+          - "Pi-hole:        http://192.168.2.43/admin"
