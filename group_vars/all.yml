@@ -15,7 +15,7 @@ homelab_packages:
   - python3-pip
 
 ufw_enabled: false
-ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080, 32400, 8096]
+ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080, 32400, 8096, 8123]
 ufw_allowed_udp: [53]
 
 docker_users:
@@ -74,3 +74,8 @@ jellyfin_media_dir: /opt/homelab/jellyfin/media
 jellyfin_timezone: "{{ timezone }}"
 jellyfin_puid: "1000"
 jellyfin_pgid: "1000"
+
+homeassistant_image: ghcr.io/home-assistant/home-assistant:stable
+homeassistant_container_name: homeassistant
+homeassistant_dir: /opt/homelab/homeassistant
+homeassistant_timezone: "{{ timezone }}"
