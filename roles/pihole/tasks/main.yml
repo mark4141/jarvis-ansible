@@ -1,4 +1,10 @@
 ---
+- name: Resolved.conf.d directory
+  ansible.builtin.file:
+    path: /etc/systemd/resolved.conf.d
+    state: directory
+    mode: "0755"
+
 - name: Create Pi-hole data directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -8,6 +14,26 @@
     - "{{ pihole_data_dir }}"
     - "{{ pihole_data_dir }}/etc-pihole"
     - "{{ pihole_data_dir }}/etc-dnsmasq.d"
+
+- name: Free port 53 from systemd-resolved stub listener
+  ansible.builtin.copy:
+    dest: /etc/systemd/resolved.conf.d/pihole.conf
+    content: "[Resolve]\nDNSStubListener=no\n"
+    mode: "0644"
+  register: pihole_resolved_conf
+
+- name: Point resolv.conf at real upstream file
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
+
+- name: Restart systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+  when: pihole_resolved_conf.changed
 
 - name: Render Pi-hole Compose file
   ansible.builtin.template:
