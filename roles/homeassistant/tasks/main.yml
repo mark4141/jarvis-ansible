@@ -56,5 +56,5 @@
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ homeassistant_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: homeassistant_up
+  changed_when: "'Started' in homeassistant_up.stderr or 'Created' in homeassistant_up.stderr or 'Recreate' in homeassistant_up.stderr"

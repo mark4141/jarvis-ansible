@@ -19,5 +19,5 @@
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ pihole_data_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: pihole_up
+  changed_when: "'Started' in pihole_up.stderr or 'Created' in pihole_up.stderr or 'Recreate' in pihole_up.stderr"

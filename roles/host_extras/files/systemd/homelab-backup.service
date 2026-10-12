@@ -1,1 +1,8 @@
-# TODO: copy /etc/systemd/system/homelab-backup.service from jarvis server
+[Unit]
+Description=Weekly backup of /opt/homelab configs
+
+[Service]
+Type=oneshot
+ExecStart=/opt/homelab/backup.sh
+Nice=10
+IOSchedulingClass=idle

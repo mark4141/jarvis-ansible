@@ -117,9 +117,7 @@ watchtower_dir: /opt/homelab/watchtower
 frigate_dir: /opt/homelab/frigate
 frigate_state: stopped
 nextcloud_state: stopped
-bambuddy_env:
-  # key names from server .env could not be read (root-owned); fill in
-  PLACEHOLDER: "{{ vault_bambuddy_placeholder }}"
+# bambuddy .env on server has only TZ/PUID/PGID/PORT (no secrets); rendered by roles/bambuddy/templates/env.j2
 hevy_api_key: "{{ vault_hevy_api_key }}"
 homelab_units:
   - server-stats.service

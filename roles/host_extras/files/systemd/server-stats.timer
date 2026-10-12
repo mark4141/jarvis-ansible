@@ -1,1 +1,10 @@
-# TODO: copy /etc/systemd/system/server-stats.timer from jarvis server
+[Unit]
+Description=Server stats for Home Assistant every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

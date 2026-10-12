@@ -1,1 +1,10 @@
-# TODO: copy /etc/systemd/system/homelab-update-report-daily.timer from jarvis server
+[Unit]
+Description=Daily homelab update/health report timer
+
+[Timer]
+OnCalendar=*-*-* 03:10:00
+RandomizedDelaySec=0
+Persistent=true
+
+[Install]
+WantedBy=timers.target

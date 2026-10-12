@@ -1,1 +1,7 @@
-# TODO: copy /etc/systemd/system/homelab-update-report-daily.service from jarvis server
+[Unit]
+Description=Daily homelab update/health report
+
+[Service]
+Type=oneshot
+ExecStart=/opt/homelab/update-report.sh daily
+Nice=10

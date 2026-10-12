@@ -1,1 +1,8 @@
-# TODO: copy /etc/systemd/system/hevy-stats.service from jarvis server
+[Unit]
+Description=Write Hevy workout stats JSON for Home Assistant
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/bin/hevy-stats.py

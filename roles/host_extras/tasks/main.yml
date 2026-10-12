@@ -15,10 +15,6 @@
          guest ok = no
          valid users = thor69
   notify: Restart smbd
-# Copy these files from the old server into roles/host_extras/files/ first (need sudo to read some):
-#   /opt/homelab/backup.sh, /opt/homelab/update-report.sh,
-#   /usr/local/bin/server-stats.py, /usr/local/bin/hevy-stats.py, /opt/homelab/hevy/.env (template from vault)
-#   /etc/systemd/system/{server-stats,hevy-stats,homelab-backup,homelab-update-report-daily,homelab-update-report-weekly}.{service,timer}
 - name: Install scripts
   ansible.builtin.copy: { src: "{{ item.src }}", dest: "{{ item.dest }}", mode: "0755" }
   loop:
@@ -38,3 +34,12 @@
 - name: Vaultwarden HTTPS via tailscale serve (currently NOT configured on server)
   ansible.builtin.command: tailscale serve --bg --https=8443 http://127.0.0.1:8222
   changed_when: false
+- name: Hevy env directory
+  ansible.builtin.file: { path: /opt/homelab/hevy, state: directory, owner: "1000", group: "1000", mode: "0755" }
+- name: Hevy API key
+  ansible.builtin.copy:
+    content: "HEVY_API_KEY={{ hevy_api_key }}\n"
+    dest: /opt/homelab/hevy/.env
+    owner: "1000"
+    mode: "0600"
+  no_log: true

@@ -20,5 +20,5 @@
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ jellyfin_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: jellyfin_up
+  changed_when: "'Started' in jellyfin_up.stderr or 'Created' in jellyfin_up.stderr or 'Recreate' in jellyfin_up.stderr"
