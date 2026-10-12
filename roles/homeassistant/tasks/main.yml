@@ -45,6 +45,7 @@
     src: /tmp/grok_conversation/custom_components/grok_conversation
     dest: "{{ homeassistant_dir }}/config/custom_components/grok_conversation"
     remote_src: true
+    mode: preserve
 
 - name: Install Jarvis system prompt
   ansible.builtin.copy:
