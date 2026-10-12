@@ -1,0 +1,15 @@
+# HTTPS (required by Bitwarden apps): tailscale serve https:8443 -> 127.0.0.1:8222
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    ports:
+      - "8222:80"
+    env_file:
+      - .env
+    environment:
+      TZ: "{{ timezone }}"
+    volumes:
+      - ./data:/data
+    mem_limit: 256m

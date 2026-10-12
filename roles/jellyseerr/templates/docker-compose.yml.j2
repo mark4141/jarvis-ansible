@@ -1,0 +1,14 @@
+services:
+  jellyseerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: jellyseerr
+    restart: unless-stopped
+    user: "1000:1000"
+    environment:
+      TZ: "{{ timezone }}"
+      LOG_LEVEL: "info"
+      PORT: "5055"
+    ports:
+      - "5055:5055"
+    volumes:
+      - {{ jellyseerr_dir }}/config:/app/config

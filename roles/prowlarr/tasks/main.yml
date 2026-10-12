@@ -1,0 +1,26 @@
+---
+- name: Create prowlarr directory
+  ansible.builtin.file:
+    path: "{{ prowlarr_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template prowlarr compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ prowlarr_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template prowlarr .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ prowlarr_dir }}/.env"
+    mode: "0600"
+  when: prowlarr_env | default({}) | length > 0
+
+- name: Start prowlarr
+  community.docker.docker_compose_v2:
+    project_src: "{{ prowlarr_dir }}"
+    state: "{{ prowlarr_state | default('present') }}"

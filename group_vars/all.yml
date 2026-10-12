@@ -15,7 +15,7 @@ homelab_packages:
   - python3-pip
 
 ufw_enabled: false
-ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080, 32400, 8096, 8123]
+ufw_allowed_tcp: [22, 53, 80, 443, 8000, 8080, 8096, 8123]
 ufw_allowed_udp: [53]
 
 docker_users:
@@ -26,8 +26,8 @@ pihole_container_name: pihole
 pihole_web_port: "80"
 pihole_https_port: "443"
 pihole_timezone: "{{ timezone }}"
-pihole_web_password: "changeme-pihole"
-pihole_upstream_dns: [1.1.1.1, 1.0.0.1]
+pihole_web_password: "{{ vault_pihole_web_password }}"
+pihole_upstream_dns: [9.9.9.9, 149.112.112.112]
 pihole_dns_listening_mode: ALL
 pihole_data_dir: /opt/homelab/pihole
 
@@ -48,24 +48,15 @@ nextcloud_dir: /opt/homelab/nextcloud
 nextcloud_http_port: "8080"
 nextcloud_timezone: "{{ timezone }}"
 nextcloud_admin_user: admin
-nextcloud_admin_password: "changeme-nextcloud"
+nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"
 nextcloud_db_name: nextcloud
 nextcloud_db_user: nextcloud
-nextcloud_db_password: "changeme-nextcloud-db"
+nextcloud_db_password: "{{ vault_nextcloud_db_password }}"
 nextcloud_overwrite_protocol: http
 nextcloud_trusted_domains:
   - localhost
   - 192.168.2.43
 
-plex_image: lscr.io/linuxserver/plex:latest
-plex_container_name: plex
-plex_dir: /opt/homelab/plex
-plex_media_dir: /opt/homelab/plex/media
-plex_timezone: "{{ timezone }}"
-plex_puid: "1000"
-plex_pgid: "1000"
-plex_claim: ""
-plex_devices: []
 
 jellyfin_image: lscr.io/linuxserver/jellyfin:latest
 jellyfin_container_name: jellyfin
@@ -75,7 +66,69 @@ jellyfin_timezone: "{{ timezone }}"
 jellyfin_puid: "1000"
 jellyfin_pgid: "1000"
 
-homeassistant_image: ghcr.io/home-assistant/home-assistant:stable
+homeassistant_image: ghcr.io/home-assistant/home-assistant:2026.9
 homeassistant_container_name: homeassistant
 homeassistant_dir: /opt/homelab/homeassistant
 homeassistant_timezone: "{{ timezone }}"
+
+# --- Oct 2026 additions ---
+# Merge into group_vars/all.yml. Secrets live in group_vars/vault.yml (ansible-vault encrypted).
+homepage_dir: /opt/homelab/homepage
+homepage_env:
+  HOMEPAGE_VAR_PIHOLE_KEY: "{{ vault_homepage_pihole_key }}"
+  HOMEPAGE_VAR_JELLYFIN_KEY: "{{ vault_jellyfin_api_key }}"
+  BAMBUDDY_API_KEY: "{{ vault_bambuddy_api_key }}"
+immich_dir: /opt/homelab/immich
+immich_env:
+  UPLOAD_LOCATION: ./library
+  DB_DATA_LOCATION: ./postgres
+  TZ: "{{ timezone }}"
+  IMMICH_VERSION: v3
+  DB_PASSWORD: "{{ vault_immich_db_password }}"
+  DB_USERNAME: postgres
+  DB_DATABASE_NAME: immich
+jellyseerr_dir: /opt/homelab/jellyseerr
+mealie_dir: /opt/homelab/mealie
+mediasorter_dir: /opt/homelab/mediasorter
+mediasorter_env:
+  JELLYFIN_API_KEY: "{{ vault_jellyfin_api_key }}"
+  JELLYFIN_URL: "http://192.168.2.43:8096"
+paperless_dir: /opt/homelab/paperless
+paperless_env:
+  PAPERLESS_SECRET_KEY: "{{ vault_paperless_secret_key }}"
+  PAPERLESS_ADMIN_USER: "{{ vault_paperless_admin_user }}"
+  PAPERLESS_ADMIN_PASSWORD: "{{ vault_paperless_admin_password }}"
+prowlarr_dir: /opt/homelab/prowlarr
+qbittorrent_dir: /opt/homelab/qbittorrent
+qbittorrent_env:
+  QBITTORRENT_USER: "{{ vault_qbittorrent_user }}"
+  QBITTORRENT_PASSWORD: "{{ vault_qbittorrent_password }}"
+  QBITTORRENT_URL: "http://192.168.2.43:8080"
+radarr_dir: /opt/homelab/radarr
+sonarr_dir: /opt/homelab/sonarr
+uptime_kuma_dir: /opt/homelab/uptime-kuma
+vaultwarden_dir: /opt/homelab/vaultwarden
+vaultwarden_env:
+  DOMAIN: "https://jarvis-server.tail13c9a7.ts.net:8443"
+  SIGNUPS_ALLOWED: "false"
+  INVITATIONS_ALLOWED: "false"
+  ADMIN_TOKEN: "{{ vault_vaultwarden_admin_token }}"
+watchtower_dir: /opt/homelab/watchtower
+frigate_dir: /opt/homelab/frigate
+frigate_state: stopped
+nextcloud_state: stopped
+bambuddy_env:
+  # key names from server .env could not be read (root-owned); fill in
+  PLACEHOLDER: "{{ vault_bambuddy_placeholder }}"
+hevy_api_key: "{{ vault_hevy_api_key }}"
+homelab_units:
+  - server-stats.service
+  - server-stats.timer
+  - hevy-stats.service
+  - hevy-stats.timer
+  - homelab-backup.service
+  - homelab-backup.timer
+  - homelab-update-report-daily.service
+  - homelab-update-report-daily.timer
+  - homelab-update-report-weekly.service
+  - homelab-update-report-weekly.timer

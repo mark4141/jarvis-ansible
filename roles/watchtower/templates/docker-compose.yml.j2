@@ -1,0 +1,14 @@
+services:
+  watchtower:
+    image: nickfedor/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      TZ: "{{ timezone }}"
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_SCHEDULE: "0 0 2 * * *"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # Opt-out model: updates every running container unless it has the label
+    #   com.centurylinklabs.watchtower.enable=false
+    # (Home Assistant is pinned to a YYYY.M tag; mediasorter + homepage-printerstatus are labelled off.)

@@ -1,0 +1,53 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    depends_on:
+      - dockerproxy
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "{{ timezone }}"
+      HOMEPAGE_ALLOWED_HOSTS: "192.168.2.43:3000,100.122.94.98:3000,jarvis-server.tail13c9a7.ts.net:3000,localhost:3000"
+    volumes:
+      - {{ homepage_dir }}/config:/app/config
+      - {{ homepage_dir }}/images:/app/public/images
+
+  # Read-only Docker API proxy so homepage (uid 1000) can show container status
+  # without having direct access to the Docker socket.
+  dockerproxy:
+    image: ghcr.io/tecnativa/docker-socket-proxy:latest
+    container_name: homepage-dockerproxy
+    restart: unless-stopped
+    environment:
+      CONTAINERS: "1"
+      INFO: "1"
+      POST: "0"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # Read-only 3D printer status (Bambu P1S via Home Assistant's recorder DB) for the customapi widget.
+  printerstatus:
+    image: python:3.12-slim
+    container_name: homepage-printerstatus
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+    user: "1000:1000"
+    environment:
+      TZ: "{{ timezone }}"
+      HA_DB: "/ha/home-assistant_v2.db"
+      ENTITY_PREFIX: "bambu_p1s"
+      BAMBUDDY_URL: "http://192.168.2.43:8000"
+      BAMBUDDY_API_KEY: "${BAMBUDDY_API_KEY}"
+      PYTHONDONTWRITEBYTECODE: "1"
+    command: ["python3", "-u", "/app/printerstatus.py"]
+    volumes:
+      - {{ homepage_dir }}/printerstatus:/app:ro
+      - /opt/homelab/homeassistant/config:/ha:ro
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro

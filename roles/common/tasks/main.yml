@@ -2,7 +2,7 @@
 - name: Set timezone
   community.general.timezone:
     name: "{{ timezone }}"
-  ignore_errors: true
+  failed_when: false
 
 - name: Update apt cache
   ansible.builtin.apt:

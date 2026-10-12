@@ -1,0 +1,18 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
+    restart: unless-stopped
+    ports:
+      - "9925:9000"
+    environment:
+      ALLOW_SIGNUP: "false"
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "{{ timezone }}"
+      BASE_URL: "http://192.168.2.43:9925"
+      MAX_WORKERS: "1"
+      WEB_CONCURRENCY: "1"
+    volumes:
+      - ./data:/app/data
+    mem_limit: 1g

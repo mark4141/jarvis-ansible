@@ -1,0 +1,39 @@
+# Paperless-ngx (official image, SQLite variant, low-resource settings)
+services:
+  broker:
+    image: docker.io/library/redis:8
+    container_name: paperless-redis
+    restart: unless-stopped
+    volumes:
+      - ./redis:/data
+    mem_limit: 128m
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless
+    restart: unless-stopped
+    depends_on:
+      - broker
+    ports:
+      - "8010:8000"
+    volumes:
+      - ./data:/usr/src/paperless/data
+      - ./media:/usr/src/paperless/media
+      - ./export:/usr/src/paperless/export
+      - ./consume:/usr/src/paperless/consume
+    env_file:
+      - .env
+    environment:
+      PAPERLESS_REDIS: "redis://broker:6379"
+      USERMAP_UID: "1000"
+      USERMAP_GID: "1000"
+      PAPERLESS_TIME_ZONE: "{{ timezone }}"
+      PAPERLESS_OCR_LANGUAGE: "eng"
+      PAPERLESS_TASK_WORKERS: "1"
+      PAPERLESS_THREADS_PER_WORKER: "1"
+      PAPERLESS_WEBSERVER_WORKERS: "1"
+      PAPERLESS_URL: "http://192.168.2.43:8010"
+      PAPERLESS_CSRF_TRUSTED_ORIGINS: "http://192.168.2.43:8010,http://100.122.94.98:8010,http://jarvis-server.tail13c9a7.ts.net:8010"
+      PAPERLESS_ALLOWED_HOSTS: "192.168.2.43,100.122.94.98,jarvis-server.tail13c9a7.ts.net,localhost"
+    cpus: 1.0
+    mem_limit: 1g

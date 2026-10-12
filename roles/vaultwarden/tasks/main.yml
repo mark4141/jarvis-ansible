@@ -1,0 +1,26 @@
+---
+- name: Create vaultwarden directory
+  ansible.builtin.file:
+    path: "{{ vaultwarden_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template vaultwarden compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ vaultwarden_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template vaultwarden .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ vaultwarden_dir }}/.env"
+    mode: "0600"
+  when: vaultwarden_env | default({}) | length > 0
+
+- name: Start vaultwarden
+  community.docker.docker_compose_v2:
+    project_src: "{{ vaultwarden_dir }}"
+    state: "{{ vaultwarden_state | default('present') }}"

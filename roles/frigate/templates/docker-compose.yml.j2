@@ -1,0 +1,24 @@
+services:
+  frigate:
+    image: ghcr.io/blakeblackshear/frigate:stable
+    container_name: frigate
+    restart: unless-stopped
+    privileged: false
+    shm_size: "512mb"
+    stop_grace_period: 30s
+    env_file:
+      - .env
+    environment:
+      TZ: "America/Halifax"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config:/config
+      - ./storage:/media/frigate
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 536870912
+    ports:
+      - "8971:8971"          # Web UI + API (login required)
+      - "127.0.0.1:8554:8554" # go2rtc RTSP restream (local only, e.g. for Home Assistant)
+    # No /dev/dri: the Haswell iGPU (i965) has no H.265 decode, so hwaccel is not usable for these cameras.

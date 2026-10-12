@@ -25,5 +25,5 @@
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ bambuddy_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: bambuddy_up
+  changed_when: "'Started' in bambuddy_up.stderr or 'Created' in bambuddy_up.stderr or 'Recreate' in bambuddy_up.stderr"

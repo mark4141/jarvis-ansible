@@ -1,0 +1,26 @@
+---
+- name: Create mealie directory
+  ansible.builtin.file:
+    path: "{{ mealie_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template mealie compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ mealie_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template mealie .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ mealie_dir }}/.env"
+    mode: "0600"
+  when: mealie_env | default({}) | length > 0
+
+- name: Start mealie
+  community.docker.docker_compose_v2:
+    project_src: "{{ mealie_dir }}"
+    state: "{{ mealie_state | default('present') }}"

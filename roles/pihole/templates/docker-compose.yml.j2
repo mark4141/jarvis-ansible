@@ -1,18 +1,20 @@
 services:
   pihole:
-    image: {{ pihole_image }}
-    container_name: {{ pihole_container_name }}
+    image: pihole/pihole:latest
+    container_name: pihole
     hostname: pihole
     restart: unless-stopped
     network_mode: host
     environment:
-      TZ: "{{ pihole_timezone }}"
+      TZ: "{{ timezone }}"
       FTLCONF_webserver_api_password: "{{ pihole_web_password }}"
       FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
       FTLCONF_dns_upstreams: "{{ pihole_upstream_dns | join(';') }}"
+      FTLCONF_ntp_sync_active: "false"
+      FTLCONF_ntp_ipv4_active: "false"
     volumes:
-      - "{{ pihole_data_dir }}/etc-pihole:/etc/pihole"
-      - "{{ pihole_data_dir }}/etc-dnsmasq.d:/etc/dnsmasq.d"
+      - "{{ pihole_dir }}/etc-pihole:/etc/pihole"
+      - "{{ pihole_dir }}/etc-dnsmasq.d:/etc/dnsmasq.d"
     cap_add:
       - NET_ADMIN
       - SYS_TIME

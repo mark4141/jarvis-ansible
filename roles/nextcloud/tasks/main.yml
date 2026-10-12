@@ -21,5 +21,6 @@
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ nextcloud_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: nextcloud_up
+  when: nextcloud_state | default('present') != 'stopped'
+  changed_when: "'Started' in nextcloud_up.stderr or 'Created' in nextcloud_up.stderr or 'Recreate' in nextcloud_up.stderr"

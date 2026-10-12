@@ -1,0 +1,40 @@
+---
+# Host-level pieces present on the server but not in the repo.
+- name: Samba for Media share
+  ansible.builtin.apt: { name: samba, state: present }
+- name: Media share
+  ansible.builtin.blockinfile:
+    path: /etc/samba/smb.conf
+    marker: "# {mark} ANSIBLE Media"
+    block: |
+      [Media]
+         comment = Jellyfin Media
+         path = /opt/homelab/jellyfin/media
+         browseable = yes
+         read only = no
+         guest ok = no
+         valid users = thor69
+  notify: Restart smbd
+# Copy these files from the old server into roles/host_extras/files/ first (need sudo to read some):
+#   /opt/homelab/backup.sh, /opt/homelab/update-report.sh,
+#   /usr/local/bin/server-stats.py, /usr/local/bin/hevy-stats.py, /opt/homelab/hevy/.env (template from vault)
+#   /etc/systemd/system/{server-stats,hevy-stats,homelab-backup,homelab-update-report-daily,homelab-update-report-weekly}.{service,timer}
+- name: Install scripts
+  ansible.builtin.copy: { src: "{{ item.src }}", dest: "{{ item.dest }}", mode: "0755" }
+  loop:
+    - { src: backup.sh, dest: /opt/homelab/backup.sh }
+    - { src: update-report.sh, dest: /opt/homelab/update-report.sh }
+    - { src: server-stats.py, dest: /usr/local/bin/server-stats.py }
+    - { src: hevy-stats.py, dest: /usr/local/bin/hevy-stats.py }
+- name: Install systemd units
+  ansible.builtin.copy: { src: "systemd/{{ item }}", dest: "/etc/systemd/system/{{ item }}", mode: "0644" }
+  loop: "{{ homelab_units }}"
+- name: Enable timers
+  ansible.builtin.systemd: { name: "{{ item }}", enabled: true, state: started, daemon_reload: true }
+  loop: [server-stats.timer, hevy-stats.timer, homelab-backup.timer, homelab-update-report-daily.timer, homelab-update-report-weekly.timer]
+- name: Tailscale (accept-dns must stay false)
+  ansible.builtin.command: tailscale set --accept-dns=false
+  changed_when: false
+- name: Vaultwarden HTTPS via tailscale serve (currently NOT configured on server)
+  ansible.builtin.command: tailscale serve --bg --https=8443 http://127.0.0.1:8222
+  changed_when: false
