@@ -20,7 +20,7 @@
     dest: /etc/systemd/resolved.conf.d/pihole.conf
     content: "[Resolve]\nDNSStubListener=no\n"
     mode: "0644"
-  register: pihole_resolved_conf
+  notify: Restart systemd-resolved
 
 - name: Point resolv.conf at real upstream file
   ansible.builtin.file:
@@ -29,11 +29,8 @@
     state: link
     force: true
 
-- name: Restart systemd-resolved
-  ansible.builtin.systemd:
-    name: systemd-resolved
-    state: restarted
-  when: pihole_resolved_conf.changed
+- name: Apply resolved change before Pi-hole starts
+  ansible.builtin.meta: flush_handlers
 
 - name: Render Pi-hole Compose file
   ansible.builtin.template:
