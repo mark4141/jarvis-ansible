@@ -21,9 +21,17 @@
     dest: "{{ bambuddy_dir }}/.env"
     mode: "0640"
 
+- name: Pull bambuddy images
+  ansible.builtin.command:
+    cmd: docker compose pull -q
+    chdir: "{{ bambuddy_dir }}"
+  changed_when: false
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start Bambuddy
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ bambuddy_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: bambuddy_up
+  changed_when: "'Started' in bambuddy_up.stderr or 'Created' in bambuddy_up.stderr or 'Recreate' in bambuddy_up.stderr"
+  when: (bambuddy_state | default(homelab_apps_state | default('present'))) != 'stopped'

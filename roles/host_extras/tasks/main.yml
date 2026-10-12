@@ -1,0 +1,64 @@
+---
+# Host-level pieces present on the server but not in the repo.
+- name: Samba for Media share
+  ansible.builtin.apt: { name: samba, state: present }
+- name: Media share
+  ansible.builtin.blockinfile:
+    path: /etc/samba/smb.conf
+    marker: "# {mark} ANSIBLE Media"
+    block: |
+      [Media]
+         comment = Jellyfin Media
+         path = /opt/homelab/jellyfin/media
+         browseable = yes
+         read only = no
+         guest ok = no
+         valid users = {{ samba_media_user }}
+  notify: Restart smbd
+- name: Install scripts
+  ansible.builtin.copy: { src: "{{ item.src }}", dest: "{{ item.dest }}", mode: "0755" }
+  loop:
+    - { src: backup.sh, dest: /opt/homelab/backup.sh }
+    - { src: update-report.sh, dest: /opt/homelab/update-report.sh }
+    - { src: server-stats.py, dest: /usr/local/bin/server-stats.py }
+    - { src: hevy-stats.py, dest: /usr/local/bin/hevy-stats.py }
+- name: Install systemd units
+  ansible.builtin.copy: { src: "systemd/{{ item }}", dest: "/etc/systemd/system/{{ item }}", mode: "0644" }
+  loop: "{{ homelab_units }}"
+- name: Enable timers
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: "{{ homelab_timers_enabled | default(true) | bool }}"
+    state: "{{ 'started' if homelab_timers_enabled | default(true) | bool else 'stopped' }}"
+    daemon_reload: true
+  loop: [server-stats.timer, hevy-stats.timer, homelab-backup.timer, homelab-update-report-daily.timer, homelab-update-report-weekly.timer]
+- name: Tailscale (accept-dns must stay false)
+  ansible.builtin.command: tailscale set --accept-dns=false
+  changed_when: false
+  when: host_tailscale_enabled | default(true) | bool
+- name: Vaultwarden HTTPS via tailscale serve (currently NOT configured on server)
+  ansible.builtin.command: tailscale serve --bg --https=8443 http://127.0.0.1:8222
+  changed_when: false
+  when: host_tailscale_enabled | default(true) | bool
+- name: Hevy env directory
+  ansible.builtin.file: { path: /opt/homelab/hevy, state: directory, owner: "1000", group: "1000", mode: "0755" }
+- name: Hevy API key
+  ansible.builtin.copy:
+    content: "HEVY_API_KEY={{ hevy_api_key }}\n"
+    dest: /opt/homelab/hevy/.env
+    owner: "1000"
+    mode: "0600"
+  no_log: true
+- name: Bambuddy virtual printer secondary IP
+  ansible.builtin.copy:
+    dest: /etc/netplan/99-bambuddy-vp.yaml
+    mode: "0600"
+    content: |
+      network:
+        version: 2
+        ethernets:
+          {{ bambuddy_vp_interface }}:
+            dhcp4: true
+            addresses:
+              - {{ bambuddy_vp_address }}
+  notify: Apply netplan

@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly (Sunday) homelab update/health report timer
+
+[Timer]
+OnCalendar=Sun *-*-* 08:00:00
+RandomizedDelaySec=0
+Persistent=true
+
+[Install]
+WantedBy=timers.target

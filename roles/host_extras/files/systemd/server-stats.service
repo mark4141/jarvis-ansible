@@ -1,0 +1,6 @@
+[Unit]
+Description=Write server stats JSON for Home Assistant
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/bin/server-stats.py

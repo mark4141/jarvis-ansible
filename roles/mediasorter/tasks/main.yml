@@ -1,0 +1,31 @@
+---
+- name: Create mediasorter directory
+  ansible.builtin.file:
+    path: "{{ mediasorter_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template mediasorter compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ mediasorter_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template mediasorter .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ mediasorter_dir }}/.env"
+    mode: "0600"
+  when: mediasorter_env | default({}) | length > 0
+
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ mediasorter_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
+- name: Start mediasorter
+  community.docker.docker_compose_v2:
+    project_src: "{{ mediasorter_dir }}"
+    state: "{{ mediasorter_state | default(homelab_apps_state | default('present')) }}"

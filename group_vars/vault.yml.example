@@ -1,0 +1,15 @@
+# ansible-vault encrypt group_vars/vault.yml — placeholders only
+vault_pihole_web_password: CHANGE_ME
+vault_homepage_pihole_key: CHANGE_ME
+vault_jellyfin_api_key: CHANGE_ME   # rotate (open item)
+vault_bambuddy_api_key: CHANGE_ME   # rotate (leaked)
+vault_immich_db_password: CHANGE_ME
+vault_paperless_secret_key: CHANGE_ME
+vault_paperless_admin_user: CHANGE_ME
+vault_paperless_admin_password: CHANGE_ME   # still default on server
+vault_qbittorrent_user: CHANGE_ME
+vault_qbittorrent_password: CHANGE_ME
+vault_vaultwarden_admin_token: CHANGE_ME
+vault_hevy_api_key: CHANGE_ME
+vault_nextcloud_admin_password: CHANGE_ME
+vault_nextcloud_db_password: CHANGE_ME

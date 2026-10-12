@@ -17,9 +17,17 @@
     dest: "{{ nextcloud_dir }}/docker-compose.yml"
     mode: "0600"
 
+- name: Pull nextcloud images
+  ansible.builtin.command:
+    cmd: docker compose pull -q
+    chdir: "{{ nextcloud_dir }}"
+  changed_when: false
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start Nextcloud stack
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ nextcloud_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: nextcloud_up
+  changed_when: "'Started' in nextcloud_up.stderr or 'Created' in nextcloud_up.stderr or 'Recreate' in nextcloud_up.stderr"
+  when: (nextcloud_state | default(homelab_apps_state | default('present'))) != 'stopped'

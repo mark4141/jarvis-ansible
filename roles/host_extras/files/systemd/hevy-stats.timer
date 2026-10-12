@@ -1,0 +1,10 @@
+[Unit]
+Description=Hevy workout stats for Home Assistant every 20 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=20min
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

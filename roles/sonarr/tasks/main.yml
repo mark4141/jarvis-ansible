@@ -1,0 +1,31 @@
+---
+- name: Create sonarr directory
+  ansible.builtin.file:
+    path: "{{ sonarr_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template sonarr compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ sonarr_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template sonarr .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ sonarr_dir }}/.env"
+    mode: "0600"
+  when: sonarr_env | default({}) | length > 0
+
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ sonarr_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
+- name: Start sonarr
+  community.docker.docker_compose_v2:
+    project_src: "{{ sonarr_dir }}"
+    state: "{{ sonarr_state | default(homelab_apps_state | default('present')) }}"

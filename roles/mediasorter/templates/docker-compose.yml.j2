@@ -1,0 +1,23 @@
+services:
+  mediasorter:
+    image: python:3.12-slim
+    container_name: mediasorter
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+    user: "1000:1000"
+    environment:
+      TZ: "{{ timezone }}"
+      PUID: "1000"
+      PGID: "1000"
+      INTERVAL_SECONDS: "300"
+      SETTLE_SECONDS: "120"
+      SORTER_LOG: "/app/sorter.log"
+      MEDIA_ROOT: "/media"
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "/app/entrypoint.sh"]
+    volumes:
+      - {{ mediasorter_dir }}:/app
+      - /opt/homelab/jellyfin/media:/media
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro

@@ -1,0 +1,15 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "{{ timezone }}"
+    ports:
+      - "7878:7878"
+    volumes:
+      - {{ radarr_dir }}/config:/config
+      - /opt/homelab/downloads:/opt/homelab/downloads
+      - /opt/homelab/jellyfin/media/Inbox:/opt/homelab/jellyfin/media/Inbox

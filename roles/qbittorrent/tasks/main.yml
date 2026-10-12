@@ -1,0 +1,31 @@
+---
+- name: Create qbittorrent directory
+  ansible.builtin.file:
+    path: "{{ qbittorrent_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template qbittorrent compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ qbittorrent_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template qbittorrent .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ qbittorrent_dir }}/.env"
+    mode: "0600"
+  when: qbittorrent_env | default({}) | length > 0
+
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ qbittorrent_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
+- name: Start qbittorrent
+  community.docker.docker_compose_v2:
+    project_src: "{{ qbittorrent_dir }}"
+    state: "{{ qbittorrent_state | default(homelab_apps_state | default('present')) }}"

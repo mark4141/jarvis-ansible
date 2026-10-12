@@ -1,0 +1,31 @@
+---
+- name: Create jellyseerr directory
+  ansible.builtin.file:
+    path: "{{ jellyseerr_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template jellyseerr compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ jellyseerr_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template jellyseerr .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ jellyseerr_dir }}/.env"
+    mode: "0600"
+  when: jellyseerr_env | default({}) | length > 0
+
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ jellyseerr_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
+- name: Start jellyseerr
+  community.docker.docker_compose_v2:
+    project_src: "{{ jellyseerr_dir }}"
+    state: "{{ jellyseerr_state | default(homelab_apps_state | default('present')) }}"

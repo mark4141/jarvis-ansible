@@ -1,0 +1,31 @@
+---
+- name: Create frigate directory
+  ansible.builtin.file:
+    path: "{{ frigate_dir }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+
+- name: Template frigate compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ frigate_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template frigate .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ frigate_dir }}/.env"
+    mode: "0600"
+  when: frigate_env | default({}) | length > 0
+
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ frigate_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
+- name: Start frigate
+  community.docker.docker_compose_v2:
+    project_src: "{{ frigate_dir }}"
+    state: "{{ frigate_state | default(homelab_apps_state | default('present')) }}"

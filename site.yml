@@ -1,29 +1,29 @@
 ---
-- name: Ubuntu Server home lab
+- name: Jarvis home lab
   hosts: homelab
   become: true
-  gather_facts: true
+  vars_files:
+    - group_vars/vault.yml
   roles:
-    - role: common
-      tags: [always]
-    - role: docker
-      tags: [always]
-    - role: bambuddy
-      tags: [bambuddy]
-    - role: pihole
-      tags: [pihole]
-    - role: nextcloud
-      tags: [nextcloud]
-    - role: jellyfin
-      tags: [jellyfin]
-    - role: homeassistant
-      tags: [homeassistant]
-  post_tasks:
-    - name: Show URLs
-      ansible.builtin.debug:
-        msg:
-          - "Home Assistant: http://192.168.2.43:8123"
-          - "Bambuddy:       http://192.168.2.43:8000"
-          - "Jellyfin:       http://192.168.2.43:8096"
-          - "Nextcloud:      http://192.168.2.43:8080"
-          - "Pi-hole:        http://192.168.2.43/admin"
+    - { role: common, tags: [always] }
+    - { role: docker, tags: [always] }
+    - { role: pihole, tags: [pihole] }
+    - { role: homeassistant, tags: [homeassistant] }
+    - { role: bambuddy, tags: [bambuddy] }
+    - { role: jellyfin, tags: [jellyfin, media] }
+    - { role: jellyseerr, tags: [jellyseerr, media] }
+    - { role: sonarr, tags: [sonarr, media] }
+    - { role: radarr, tags: [radarr, media] }
+    - { role: prowlarr, tags: [prowlarr, media] }
+    - { role: qbittorrent, tags: [qbittorrent, media] }
+    - { role: mediasorter, tags: [mediasorter, media] }
+    - { role: immich, tags: [immich] }
+    - { role: paperless, tags: [paperless] }
+    - { role: mealie, tags: [mealie] }
+    - { role: vaultwarden, tags: [vaultwarden] }
+    - { role: uptime_kuma, tags: [uptime-kuma] }
+    - { role: homepage, tags: [homepage] }
+    - { role: watchtower, tags: [watchtower] }
+    - { role: frigate, tags: [frigate] }        # frigate_state: stopped
+    - { role: nextcloud, tags: [nextcloud] }    # nextcloud_state: stopped
+    - { role: host_extras, tags: [host] }

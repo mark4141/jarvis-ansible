@@ -1,3 +1,9 @@
 *.retry
 .vault_pass
 group_vars/vault.yml
+vault.yml
+group_vars/vault.yml
+.env
+**/.env
+*.log
+inventory-beelink.ini

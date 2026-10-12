@@ -2,7 +2,7 @@
 - name: Set timezone
   community.general.timezone:
     name: "{{ timezone }}"
-  ignore_errors: true
+  failed_when: false
 
 - name: Update apt cache
   ansible.builtin.apt:
@@ -13,6 +13,33 @@
   ansible.builtin.apt:
     name: "{{ homelab_packages }}"
     state: present
+
+- name: Data disk for /opt/homelab
+  when: homelab_data_disk is defined
+  block:
+    - name: Partition data disk (GPT, single partition)
+      community.general.parted:
+        device: "{{ homelab_data_disk }}"
+        label: gpt
+        number: 1
+        name: "{{ homelab_data_disk_label }}"
+        state: present
+    - name: Ext4 filesystem on data partition (never reformats existing)
+      community.general.filesystem:
+        dev: "{{ homelab_data_disk }}1"
+        fstype: ext4
+        opts: "-L {{ homelab_data_disk_label }}"
+    - name: Read partition UUID
+      ansible.builtin.command: blkid -s UUID -o value {{ homelab_data_disk }}1
+      register: common_disk_uuid
+      changed_when: false
+    - name: Mount /opt/homelab by UUID
+      ansible.posix.mount:
+        path: /opt/homelab
+        src: "UUID={{ common_disk_uuid.stdout }}"
+        fstype: ext4
+        opts: defaults,nofail
+        state: mounted
 
 - name: Create homelab data root
   ansible.builtin.file:

@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly homelab config backup (Sunday 01:00, before the 01:15 apt update)
+
+[Timer]
+OnCalendar=Sun *-*-* 01:00:00
+RandomizedDelaySec=0
+Persistent=true
+
+[Install]
+WantedBy=timers.target

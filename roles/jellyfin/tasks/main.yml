@@ -16,9 +16,17 @@
     dest: "{{ jellyfin_dir }}/docker-compose.yml"
     mode: "0644"
 
+- name: Pull jellyfin images
+  ansible.builtin.command:
+    cmd: docker compose pull -q
+    chdir: "{{ jellyfin_dir }}"
+  changed_when: false
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start Jellyfin
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ jellyfin_dir }}"
-  register: out
-  changed_when: "'Started' in out.stderr or 'Created' in out.stderr or 'Recreate' in out.stderr"
+  register: jellyfin_up
+  changed_when: "'Started' in jellyfin_up.stderr or 'Created' in jellyfin_up.stderr or 'Recreate' in jellyfin_up.stderr"
+  when: (jellyfin_state | default(homelab_apps_state | default('present'))) != 'stopped'
