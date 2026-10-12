@@ -5,3 +5,5 @@ vault.yml
 group_vars/vault.yml
 .env
 **/.env
+*.log
+inventory-beelink.ini
