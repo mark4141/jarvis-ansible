@@ -13,7 +13,7 @@
          browseable = yes
          read only = no
          guest ok = no
-         valid users = {{ ansible_user }}
+         valid users = {{ samba_media_user }}
   notify: Restart smbd
 - name: Install scripts
   ansible.builtin.copy: { src: "{{ item.src }}", dest: "{{ item.dest }}", mode: "0755" }
@@ -49,3 +49,16 @@
     owner: "1000"
     mode: "0600"
   no_log: true
+- name: Bambuddy virtual printer secondary IP
+  ansible.builtin.copy:
+    dest: /etc/netplan/99-bambuddy-vp.yaml
+    mode: "0600"
+    content: |
+      network:
+        version: 2
+        ethernets:
+          {{ bambuddy_vp_interface }}:
+            dhcp4: true
+            addresses:
+              - {{ bambuddy_vp_address }}
+  notify: Apply netplan

@@ -134,3 +134,9 @@ homelab_units:
 # Optional data disk for /opt/homelab (e.g. Beelink sda). Unset = no disk handling.
 # homelab_data_disk: /dev/sda
 homelab_data_disk_label: homelab
+
+# Samba Media share user
+samba_media_user: thor4141
+# Bambuddy virtual printer needs its own LAN IP (OrcaSlicer "send to printer")
+bambuddy_vp_interface: enp1s0
+bambuddy_vp_address: 192.168.2.44/24
