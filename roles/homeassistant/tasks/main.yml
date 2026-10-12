@@ -53,9 +53,17 @@
     dest: "{{ homeassistant_dir }}/config/jarvis_prompt.txt"
     mode: "0644"
 
+- name: Pull homeassistant images
+  ansible.builtin.command:
+    cmd: docker compose pull -q
+    chdir: "{{ homeassistant_dir }}"
+  changed_when: false
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start Home Assistant
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ homeassistant_dir }}"
   register: homeassistant_up
   changed_when: "'Started' in homeassistant_up.stderr or 'Created' in homeassistant_up.stderr or 'Recreate' in homeassistant_up.stderr"
+  when: (homeassistant_state | default(homelab_apps_state | default('present'))) != 'stopped'

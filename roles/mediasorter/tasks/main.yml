@@ -20,7 +20,12 @@
     mode: "0600"
   when: mediasorter_env | default({}) | length > 0
 
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ mediasorter_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start mediasorter
   community.docker.docker_compose_v2:
     project_src: "{{ mediasorter_dir }}"
-    state: "{{ mediasorter_state | default('present') }}"
+    state: "{{ mediasorter_state | default(homelab_apps_state | default('present')) }}"

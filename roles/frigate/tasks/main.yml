@@ -20,7 +20,12 @@
     mode: "0600"
   when: frigate_env | default({}) | length > 0
 
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ frigate_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start frigate
   community.docker.docker_compose_v2:
     project_src: "{{ frigate_dir }}"
-    state: "{{ frigate_state | default('present') }}"
+    state: "{{ frigate_state | default(homelab_apps_state | default('present')) }}"

@@ -110,7 +110,7 @@ uptime_kuma_dir: /opt/homelab/uptime-kuma
 vaultwarden_dir: /opt/homelab/vaultwarden
 vaultwarden_env:
   DOMAIN: "https://jarvis-server.tail13c9a7.ts.net:8443"
-  SIGNUPS_ALLOWED: "false"
+  SIGNUPS_ALLOWED: "true"   # matches live server; consider false
   INVITATIONS_ALLOWED: "false"
   ADMIN_TOKEN: "{{ vault_vaultwarden_admin_token }}"
 watchtower_dir: /opt/homelab/watchtower
@@ -130,3 +130,7 @@ homelab_units:
   - homelab-update-report-daily.timer
   - homelab-update-report-weekly.service
   - homelab-update-report-weekly.timer
+
+# Optional data disk for /opt/homelab (e.g. Beelink sda). Unset = no disk handling.
+# homelab_data_disk: /dev/sda
+homelab_data_disk_label: homelab

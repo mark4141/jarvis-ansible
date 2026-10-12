@@ -7,14 +7,16 @@ services:
     network_mode: host
     environment:
       TZ: "{{ timezone }}"
+{% if pihole_web_password | length > 0 %}
       FTLCONF_webserver_api_password: "{{ pihole_web_password }}"
+{% endif %}
       FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
       FTLCONF_dns_upstreams: "{{ pihole_upstream_dns | join(';') }}"
       FTLCONF_ntp_sync_active: "false"
       FTLCONF_ntp_ipv4_active: "false"
     volumes:
-      - "{{ pihole_dir }}/etc-pihole:/etc/pihole"
-      - "{{ pihole_dir }}/etc-dnsmasq.d:/etc/dnsmasq.d"
+      - "{{ pihole_data_dir }}/etc-pihole:/etc/pihole"
+      - "{{ pihole_data_dir }}/etc-dnsmasq.d:/etc/dnsmasq.d"
     cap_add:
       - NET_ADMIN
       - SYS_TIME

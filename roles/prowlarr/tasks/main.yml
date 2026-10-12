@@ -20,7 +20,12 @@
     mode: "0600"
   when: prowlarr_env | default({}) | length > 0
 
+- name: Pull images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ prowlarr_dir }}"
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start prowlarr
   community.docker.docker_compose_v2:
     project_src: "{{ prowlarr_dir }}"
-    state: "{{ prowlarr_state | default('present') }}"
+    state: "{{ prowlarr_state | default(homelab_apps_state | default('present')) }}"

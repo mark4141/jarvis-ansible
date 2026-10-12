@@ -15,9 +15,17 @@
     dest: "{{ pihole_data_dir }}/docker-compose.yml"
     mode: "0644"
 
+- name: Pull pihole images
+  ansible.builtin.command:
+    cmd: docker compose pull -q
+    chdir: "{{ pihole_data_dir }}"
+  changed_when: false
+  when: homelab_pull_images | default(true) | bool
+
 - name: Start Pi-hole
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: "{{ pihole_data_dir }}"
   register: pihole_up
   changed_when: "'Started' in pihole_up.stderr or 'Created' in pihole_up.stderr or 'Recreate' in pihole_up.stderr"
+  when: (pihole_state | default(homelab_apps_state | default('present'))) != 'stopped'
